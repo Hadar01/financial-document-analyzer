@@ -5,13 +5,13 @@ A multi-agent system for analyzing financial documents (PDFs) using CrewAI and G
 ## Screenshots
 
 ### Web UI
-![Web UI](screenshots/web-ui.png)
+![Web UI](Screenshots/web-ui.png)
 
 ### Analysis Results
-![Analysis Results](screenshots/analysis-results.png)
+![Analysis Results](Screenshots/analysis-results.png)
 
 ### Swagger API Documentation
-![Swagger API](screenshots/swagger-api.png)
+![Swagger API](Screenshots/swagger-api.png)
 
 ## What it does
 
