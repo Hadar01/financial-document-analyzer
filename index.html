@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Document Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="file"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="file"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-clear {
+            background: #f0f0f0;
+            color: #333;
+            max-width: 150px;
+        }
+        
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results {
+            display: none;
+            margin-top: 40px;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .result-section {
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .result-header {
+            background: #f5f5f5;
+            padding: 15px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .result-header:hover {
+            background: #efefef;
+        }
+        
+        .result-toggle {
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        
+        .result-toggle.open {
+            transform: rotate(180deg);
+        }
+        
+        .result-content {
+            display: none;
+            padding: 20px;
+            color: #555;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #fafafa;
+        }
+        
+        .result-content.open {
+            display: block;
+        }
+        
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #3c3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .success.show {
+            display: block;
+        }
+        
+        .file-info {
+            color: #667eea;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn-submit,
+            .btn-clear {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Financial Document Analyzer</h1>
+            <p class="subtitle">Upload a PDF and get comprehensive financial analysis powered by AI</p>
+        </div>
+        
+        <form id="analyzeForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="pdfFile">📄 Upload PDF Document</label>
+                <input type="file" id="pdfFile" name="file" accept=".pdf" required>
+                <div class="file-info" id="fileInfo"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="query">📝 Analysis Query (Optional)</label>
+                <textarea id="query" name="query" placeholder="Enter your specific analysis request... (Leave blank for default comprehensive analysis)"></textarea>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn-submit">Analyze Document</button>
+                <button type="reset" class="btn-clear">Clear</button>
+            </div>
+        </form>
+        
+        <div class="error" id="errorMsg"></div>
+        <div class="success" id="successMsg"></div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing your document... This may take a minute.</p>
+        </div>
+        
+        <div class="results" id="results">
+            <h2 style="margin-bottom: 20px; color: #333;">📈 Analysis Results</h2>
+            
+            <div class="result-section">
+                <div class="result-header" onclick="toggleResult('verification')">
+                    <span>✅ Document Verification</span>
+                    <span class="result-toggle" id="verification-toggle">▼</span>
+                </div>
+                <div class="result-content" id="verification"></div>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-header" onclick="toggleResult('analysis')">
+                    <span>💼 Financial Analysis</span>
+                    <span class="result-toggle" id="analysis-toggle">▼</span>
+                </div>
+                <div class="result-content" id="analysis"></div>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-header" onclick="toggleResult('investment')">
+                    <span>💰 Investment Recommendations</span>
+                    <span class="result-toggle" id="investment-toggle">▼</span>
+                </div>
+                <div class="result-content" id="investment"></div>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-header" onclick="toggleResult('risk')">
+                    <span>⚠️ Risk Assessment</span>
+                    <span class="result-toggle" id="risk-toggle">▼</span>
+                </div>
+                <div class="result-content" id="risk"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('analyzeForm');
+        const pdfFile = document.getElementById('pdfFile');
+        const errorMsg = document.getElementById('errorMsg');
+        const successMsg = document.getElementById('successMsg');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const fileInfo = document.getElementById('fileInfo');
+        
+        // Show file name when selected
+        pdfFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                const fileSize = (e.target.files[0].size / 1024 / 1024).toFixed(2);
+                fileInfo.textContent = `✓ ${fileName} (${fileSize} MB)`;
+            }
+        });
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const file = pdfFile.files[0];
+            const query = document.getElementById('query').value || 'Provide comprehensive financial analysis of the submitted document';
+            
+            if (!file) {
+                showError('Please select a PDF file');
+                return;
+            }
+            
+            if (!file.name.toLowerCase().endsWith('.pdf')) {
+                showError('Please upload a PDF file');
+                return;
+            }
+            
+            // Clear previous errors and results
+            hideError();
+            hideSuccess();
+            results.classList.remove('show');
+            
+            // Show loading
+            loading.style.display = 'block';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('query', query);
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    showError(data.detail || 'An error occurred during analysis');
+                    return;
+                }
+                
+                // Display results
+                displayResults(data.analysis_results);
+                showSuccess('✓ Analysis completed successfully!');
+                
+            } catch (error) {
+                showError('Error: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+        
+        function displayResults(analysisResults) {
+            document.getElementById('verification').textContent = formatText(analysisResults.verification);
+            document.getElementById('analysis').textContent = formatText(analysisResults.analysis);
+            document.getElementById('investment').textContent = formatText(analysisResults.investment);
+            document.getElementById('risk').textContent = formatText(analysisResults.risk);
+            
+            // Open first section by default
+            toggleResult('verification');
+            
+            results.classList.add('show');
+        }
+        
+        function formatText(text) {
+            if (!text) return 'No content available';
+            
+            // Replace ** with no formatting (remove markdown)
+            return text.replace(/\*\*(.*?)\*\*/g, '$1');
+        }
+        
+        function toggleResult(sectionId) {
+            const content = document.getElementById(sectionId);
+            const toggle = document.getElementById(sectionId + '-toggle');
+            
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+        
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+        }
+        
+        function hideError() {
+            errorMsg.classList.remove('show');
+        }
+        
+        function showSuccess(message) {
+            successMsg.textContent = message;
+            successMsg.classList.add('show');
+            setTimeout(() => hideSuccess(), 5000);
+        }
+        
+        function hideSuccess() {
+            successMsg.classList.remove('show');
+        }
+    </script>
+</body>
+</html>
