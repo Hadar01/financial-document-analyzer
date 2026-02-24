@@ -1,0 +1,28 @@
+# Environment
+.env
+*.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Outputs
+outputs/*.json
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test files
+*.test.json
+response_*.json
