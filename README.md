@@ -2,6 +2,17 @@
 
 A multi-agent system for analyzing financial documents (PDFs) using CrewAI and GPT-4. Upload a quarterly report or financial statement, and get back detailed analysis including verification, metrics extraction, investment recommendations, and risk assessment.
 
+## Screenshots
+
+### Web UI
+![Web UI](screenshots/web-ui.png)
+
+### Analysis Results
+![Analysis Results](screenshots/analysis-results.png)
+
+### Swagger API Documentation
+![Swagger API](screenshots/swagger-api.png)
+
 ## What it does
 
 - Reads PDF financial documents (10-K, quarterly reports, etc.)
@@ -86,15 +97,22 @@ index.html       - Web UI
 
 ## Bugs I fixed
 
-The original code had several issues:
+The original code had several issues that I identified and fixed:
 
 1. **Import errors** - CrewAI 0.130+ changed import paths (`from crewai import Agent` not `from crewai.agents`)
 2. **Tool pattern wrong** - Had to use `BaseTool` from `crewai.tools` with `_run()` method
 3. **Agents couldn't find files** - Fixed by pre-reading PDF content server-side and injecting into prompts
-4. **SQLAlchemy issues** - JSONB import path changed, `metadata` is reserved keyword
-5. **Missing validation** - Added PDF header checks, file size limits
+4. **SQLAlchemy issues** - JSONB import path changed, `metadata` is reserved keyword (renamed to `result_metadata`)
+5. **Missing validation** - Added PDF header checks, file size limits, content-type verification
 6. **No database persistence** - Added PostgreSQL storage for analysis results
-7. **Generic error handling** - Added proper HTTP status codes
+7. **Generic error handling** - Added proper HTTP status codes (400, 413, 415, 500)
+8. **Circular LLM assignment** - Original had `llm=llm`, fixed with proper `ChatOpenAI` initialization
+9. **Wrong parameter name** - `tool=` changed to `tools=` (list of tools)
+10. **max_iter=1** - Agents gave up after 1 try, increased to reasonable values
+11. **Missing agent goal parameter** - Verifier and Risk Assessor had syntax errors
+12. **PDFReader import missing** - Added `from llama_index.readers.file import PDFReader`
+13. **Unprofessional backstories** - Rewrote agent backstories to be more professional
+14. **Incomplete task descriptions** - Rewrote task expected outputs with clear structure
 
 ## Notes
 
